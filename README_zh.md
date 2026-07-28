@@ -33,6 +33,7 @@
 - [📸 预览](#-预览)
 - [📋 前置依赖](#-前置依赖)
 - [🚀 安装](#-安装)
+- [🗑️ 卸载](#-卸载)
 - [⚡ 快速上手](#-快速上手)
 - [🎬 实操示例](#-实操示例)
 - [⌨️ 完整快捷键](#-完整快捷键)
@@ -213,6 +214,39 @@ nvim
       ├─ stylua / taplo / biome
       └─ ✅ 完成！打开 .rs 文件即可使用
 ```
+
+---
+
+## 🗑️ 卸载
+
+### 方式一：一行命令（推荐）
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lisering/rusty-nvim/main/uninstall.sh | bash
+```
+
+### 方式二：克隆 + 运行脚本
+
+```bash
+cd ~/.config/nvim && bash uninstall.sh
+```
+
+跳过确认提示：
+
+```bash
+bash uninstall.sh --force
+```
+
+### 方式三：手动删除
+
+```bash
+rm -rf ~/.config/nvim{,.bak}
+rm -rf ~/.local/share/nvim{,.bak}
+rm -rf ~/.local/state/nvim{,.bak}
+rm -rf ~/.cache/nvim{,.bak}
+```
+
+> 以上命令会彻底删除配置、插件、缓存、运行状态及所有备份。不会卸载 Neovim 本身。
 
 ---
 
@@ -1008,6 +1042,7 @@ struct User {
 ~/.config/nvim/
 ├── init.lua                    # 入口: bootstrap lazy.nvim + 加载模块
 ├── install.sh                  # 一键安装脚本（依赖检测 + 备份）
+├── uninstall.sh                # 一键卸载脚本（彻底删除配置 + 数据 + 缓存）
 ├── .stylua.toml                # Lua 格式化配置 (stylua)
 ├── lua/
 │   ├── autocmds.lua            # 自动命令: 保存重跑 / inlay hints / 光标色条

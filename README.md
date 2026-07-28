@@ -33,6 +33,7 @@ Built on NvChad · rustaceanvim · blink.cmp · LuaSnip · nvim-dap
 - [📸 Preview](#-preview)
 - [📋 Prerequisites](#-prerequisites)
 - [🚀 Installation](#-installation)
+- [🗑️ Uninstallation](#-uninstallation)
 - [⚡ Quick Start](#-quick-start)
 - [🎬 Practical Examples](#-practical-examples)
 - [⌨️ Full Keymap Reference](#-full-keymap-reference)
@@ -213,6 +214,39 @@ Launch nvim
       ├─ stylua / taplo / biome
       └─ ✅ Done! Open a .rs file and start coding
 ```
+
+---
+
+## 🗑️ Uninstallation
+
+### Option A: One-liner (recommended)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lisering/rusty-nvim/main/uninstall.sh | bash
+```
+
+### Option B: Clone + Run Script
+
+```bash
+cd ~/.config/nvim && bash uninstall.sh
+```
+
+To skip the confirmation prompt:
+
+```bash
+bash uninstall.sh --force
+```
+
+### Option C: Manual
+
+```bash
+rm -rf ~/.config/nvim{,.bak}
+rm -rf ~/.local/share/nvim{,.bak}
+rm -rf ~/.local/state/nvim{,.bak}
+rm -rf ~/.cache/nvim{,.bak}
+```
+
+> This removes the config, plugins, cache, state, and all backups. Neovim itself is not uninstalled.
 
 ---
 
@@ -1004,6 +1038,7 @@ struct User {
 ~/.config/nvim/
 ├── init.lua                    # Entry: bootstrap lazy.nvim + load modules
 ├── install.sh                  # One-click installer (dep check + backup)
+├── uninstall.sh                # One-click uninstaller (removes config + data + cache)
 ├── .stylua.toml                # Lua formatting config (for stylua)
 ├── lua/
 │   ├── autocmds.lua            # Autocmds: save-rerun / inlay hints / cursor bar
