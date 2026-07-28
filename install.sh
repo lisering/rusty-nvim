@@ -2,15 +2,13 @@
 # ============================================================
 # rusty-nvim — Installation Script
 # 适用: macOS / Linux / WSL
-# 功能: 检测依赖 → 备份旧配置 → 克隆必要配置文件
 #
 # 用法:
-#   方式一 (curl):  curl -fsSL https://raw.githubusercontent.com/<user>/<repo>/main/install.sh | bash
-#   方式二 (clone): git clone <repo> && cd rusty-nvim && bash install.sh
+#   curl -fsSL https://raw.githubusercontent.com/lisering/rusty-nvim/main/install.sh | bash
+#   git clone https://github.com/lisering/rusty-nvim.git && cd rusty-nvim && bash install.sh
 #
-# 环境变量 (可选):
-#   REPO_URL          Git 仓库地址 (默认: 下方 DEFAULT_REPO)
-#   NVIM_CONFIG_DIR   Neovim 配置目录 (默认: ~/.config/nvim)
+# 原理: 仅克隆 Neovim 必要配置文件 (sparse-checkout)
+#       运行 nvim 后 lazy.nvim 自动安装所有插件
 # ============================================================
 
 set -euo pipefail
@@ -31,188 +29,77 @@ fail()  { echo -e "${RED}✗${NC} $1"; }
 title() { echo -e "\n${BOLD}${CYAN}═══ $1 ═══${NC}\n"; }
 
 # ---------- 配置 ----------
-# Repo URL (can be overridden with REPO_URL env var)
-DEFAULT_REPO="https://github.com/lisering/rusty-nvim.git"
-REPO_URL="${REPO_URL:-$DEFAULT_REPO}"
+REPO_URL="${REPO_URL:-https://github.com/lisering/rusty-nvim.git}"
 NVIM_CONFIG_DIR="${NVIM_CONFIG_DIR:-$HOME/.config/nvim}"
 NVIM_DATA_DIR="${NVIM_DATA_DIR:-$HOME/.local/share/nvim}"
 
 # ---------- 依赖检测 ----------
 title "Checking Dependencies"
 
-ERRORS=0
-WARNINGS=0
-
-# --- Neovim 0.10+ ---
-if command -v nvim &>/dev/null; then
-    NVIM_VER=$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+' | head -1)
-    NVIM_MAJOR=$(echo "$NVIM_VER" | cut -d. -f1)
-    NVIM_MINOR=$(echo "$NVIM_VER" | cut -d. -f2)
-    if [ "$NVIM_MAJOR" -gt 0 ] || { [ "$NVIM_MAJOR" -eq 0 ] && [ "$NVIM_MINOR" -ge 10 ]; }; then
-        ok "Neovim $NVIM_VER"
-    else
-        fail "Neovim $NVIM_VER — need 0.10+"
-        echo "  macOS:   brew install neovim"
-        echo "  Linux:   https://github.com/neovim/neovim/wiki/Installing-Neovim"
-        ERRORS=$((ERRORS + 1))
-    fi
-else
+if ! command -v nvim &>/dev/null; then
     fail "Neovim not found"
-    echo "  macOS:   brew install neovim"
-    echo "  Linux:   https://github.com/neovim/neovim/wiki/Installing-Neovim"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# --- Rust toolchain ---
-if command -v cargo &>/dev/null && command -v rustc &>/dev/null; then
-    RUST_VER=$(rustc --version)
-    ok "$RUST_VER"
-else
-    fail "Rust toolchain not found"
-    echo "  Install: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# --- ripgrep ---
-if command -v rg &>/dev/null; then
-    ok "ripgrep $(rg --version | head -1)"
-else
-    warn "ripgrep not found — Telescope live_grep will not work"
-    echo "  macOS:   brew install ripgrep"
-    echo "  Ubuntu:  apt install ripgrep"
-    echo "  Fedora:  dnf install ripgrep"
-    echo "  Arch:    pacman -S ripgrep"
-    WARNINGS=$((WARNINGS + 1))
-fi
-
-# --- fd ---
-if command -v fd &>/dev/null || command -v fdfind &>/dev/null; then
-    ok "fd found"
-else
-    warn "fd not found — Telescope find_files will use find fallback"
-    echo "  macOS:   brew install fd"
-    echo "  Ubuntu:  apt install fd-find"
-    WARNINGS=$((WARNINGS + 1))
-fi
-
-# --- Node.js (for some Mason packages) ---
-if command -v node &>/dev/null; then
-    NODE_VER=$(node --version)
-    ok "Node.js $NODE_VER"
-else
-    warn "Node.js not found — some Mason packages may fail"
-    echo "  macOS:   brew install node"
-    echo "  Linux:   https://github.com/nvm-sh/nvm"
-    WARNINGS=$((WARNINGS + 1))
-fi
-
-# --- git ---
-if command -v git &>/dev/null; then
-    ok "git $(git --version | sed 's/git version //')"
-else
-    fail "git not found"
-    echo "  macOS:   brew install git"
-    echo "  Ubuntu:  apt install git"
-    echo "  Fedora:  dnf install git"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# --- Nerd Font (best-effort check) ---
-if fc-list 2>/dev/null | grep -qi "nerd\|hack\|fira\|jetbrains"; then
-    ok "Nerd Font detected"
-else
-    warn "No Nerd Font detected — icons may show as boxes"
-    echo "  macOS:   brew install --cask font-jetbrains-mono-nerd-font"
-    echo "  Linux:   https://www.nerdfonts.com/font-downloads"
-    WARNINGS=$((WARNINGS + 1))
-fi
-
-# --- 报告 ---
-echo ""
-if [ "$ERRORS" -gt 0 ]; then
-    fail "$ERRORS required dependency(ies) missing. Please install them first."
-    echo ""
-    echo "Quick fix (macOS):"
-    echo "  brew install neovim ripgrep git fd node"
-    echo "  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
-    echo ""
-    echo "Quick fix (Ubuntu/Debian):"
-    echo "  sudo apt install -y ripgrep git fd-find nodejs"
-    echo "  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+    echo "  macOS:  brew install neovim"
+    echo "  Linux:  https://github.com/neovim/neovim/wiki/Installing-Neovim"
     exit 1
 fi
-ok "All required dependencies satisfied!"
-if [ "$WARNINGS" -gt 0 ]; then
-    warn "$WARNINGS optional dependency(ies) missing (see above)."
+ok "Neovim $(nvim --version | head -1)"
+
+if ! command -v git &>/dev/null; then
+    fail "git not found"
+    echo "  macOS:  brew install git"
+    exit 1
 fi
+ok "git $(git --version | sed 's/git version //')"
+
+# 可选依赖
+for cmd in rg fd cargo node; do
+    command -v "$cmd" &>/dev/null && ok "$cmd found" || warn "$cmd not found (optional)"
+done
 
 # ---------- 备份旧配置 ----------
 title "Backing Up Existing Config"
 
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-
 if [ -d "$NVIM_CONFIG_DIR" ]; then
-    BACKUP_DIR="${NVIM_CONFIG_DIR}.bak.${TIMESTAMP}"
-    info "Backing up $NVIM_CONFIG_DIR → $BACKUP_DIR"
-    mv "$NVIM_CONFIG_DIR" "$BACKUP_DIR"
-    ok "Config backed up"
+    BACKUP="${NVIM_CONFIG_DIR}.bak"
+    rm -rf "$BACKUP"
+    mv "$NVIM_CONFIG_DIR" "$BACKUP"
+    ok "Backed up to $BACKUP"
 else
-    info "No existing config found, skipping backup"
+    info "No existing config found"
 fi
 
-# 提示清理旧 data 目录
 if [ -d "$NVIM_DATA_DIR" ]; then
-    DATA_SIZE=$(du -sh "$NVIM_DATA_DIR" 2>/dev/null | cut -f1 || echo "unknown")
-    info "Existing nvim data dir: $DATA_SIZE"
-    warn "If you encounter plugin conflicts, run: rm -rf $NVIM_DATA_DIR"
+    DATA_SIZE=$(du -sh "$NVIM_DATA_DIR" 2>/dev/null | cut -f1 || echo "?")
+    warn "Existing nvim data dir ($DATA_SIZE) — plugin conflicts? run: rm -rf $NVIM_DATA_DIR"
 fi
 
-# ---------- 安装配置 ----------
+# ---------- 克隆配置 (仅必要文件) ----------
 title "Installing Config"
 
-# 判断运行方式: 从 git clone 还是 curl 管道
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+info "Cloning from $REPO_URL (sparse checkout)"
 
-if [ -f "$SCRIPT_DIR/init.lua" ]; then
-    # 从 git clone 运行: 直接复制或创建符号链接
-    info "Installing from $SCRIPT_DIR"
-    if [ "$SCRIPT_DIR" = "$NVIM_CONFIG_DIR" ]; then
-        ok "Already in place ($NVIM_CONFIG_DIR)"
-    else
-        mkdir -p "$(dirname "$NVIM_CONFIG_DIR")"
-        # 如果目标已存在（刚才已备份，但可能有符号链接）
-        rm -f "$NVIM_CONFIG_DIR" 2>/dev/null || true
-        ln -sf "$SCRIPT_DIR" "$NVIM_CONFIG_DIR"
-        ok "Symlinked $SCRIPT_DIR → $NVIM_CONFIG_DIR"
-    fi
+# 优先使用 sparse-checkout，仅下载必要文件；不支持则 fallback 到全量克隆后清理
+if git clone --depth 1 --filter=blob:none --sparse "$REPO_URL" "$NVIM_CONFIG_DIR" 2>/dev/null; then
+    cd "$NVIM_CONFIG_DIR"
+    git sparse-checkout set --no-cone /init.lua /lua /luasnippets /lazy-lock.json
 else
-    # curl 管道运行: clone 仓库，仅保留 Neovim 必要文件
-    info "Cloning from $REPO_URL"
+    info "Sparse checkout unavailable, falling back to full clone..."
     git clone --depth 1 "$REPO_URL" "$NVIM_CONFIG_DIR"
-
-    info "Cleaning up non-essential files..."
-    rm -rf "$NVIM_CONFIG_DIR/.git"
-    rm -f  "$NVIM_CONFIG_DIR/install.sh" "$NVIM_CONFIG_DIR/uninstall.sh"
-    rm -f  "$NVIM_CONFIG_DIR/README.md" "$NVIM_CONFIG_DIR/README_zh.md"
-    rm -f  "$NVIM_CONFIG_DIR/KEYMAPS.md" "$NVIM_CONFIG_DIR/KEYMAPS_zh.md"
-    rm -f  "$NVIM_CONFIG_DIR/LICENSE"
-    rm -rf "$NVIM_CONFIG_DIR/gifs"
-
-    ok "Installed to $NVIM_CONFIG_DIR"
+    cd "$NVIM_CONFIG_DIR"
+    rm -f  install.sh uninstall.sh README.md README_zh.md KEYMAPS.md KEYMAPS_zh.md LICENSE
+    rm -rf gifs
 fi
+
+# 移除 .git — 只保留配置文件，不需要 git 历史
+rm -rf .git
+
+ok "Config installed to $NVIM_CONFIG_DIR"
 
 # ---------- 完成 ----------
 echo ""
 ok "Installation complete!"
 echo ""
-info "Run nvim to auto-install plugins:"
-echo "  nvim"
-echo ""
-title "Next Steps"
-echo "  1. Run nvim — plugins will auto-install on first launch"
-echo "  2. Open a Rust project:  cd ~/my-rust-project && nvim src/main.rs"
-echo "  3. Wait for rust-analyzer to index (check statusline)"
-echo "  4. Press <Space>rr to run, <Space>rc to check"
-echo "  5. Press <Space>ff to find files, <C-n> for file tree"
+info "Run 'nvim' to bootstrap plugins."
+info "lazy.nvim will auto-install all plugins on first launch."
 echo ""
 echo -e "${BOLD}${GREEN}Happy hacking! 🦀${NC}"
