@@ -103,4 +103,63 @@ autocmd({ "BufEnter", "CursorMoved", "CursorMovedI", "WinScrolled" }, {
   end,
 })
 
+-- ============================================================
+-- Nvdash: Apply gradient colors to header ASCII art
+-- NvChad renders all header lines with a single NvDashAscii highlight.
+-- This autocmd runs after nvdash renders and replaces the header
+-- extmarks with a top-to-bottom gradient: Rust orange → coral → amber.
+-- ============================================================
+augroup("NvDashGradient", { clear = true })
+
+autocmd("FileType", {
+  group = "NvDashGradient",
+  pattern = "nvdash",
+  callback = function()
+    vim.schedule(function()
+      local buf = vim.g.nvdash_buf
+      if not buf or not vim.api.nvim_buf_is_valid(buf) then return end
+
+      local ns = vim.api.nvim_get_namespaces()["nvdash"]
+      if not ns then return end
+
+      -- Get all extmarks with details (ordered by row)
+      local extmarks = vim.api.nvim_buf_get_extmarks(buf, ns, 0, -1, { details = true })
+
+      -- Gradient mapping: header line index → highlight group
+      -- Lines 2-3: top (Rust orange), 4-5: upper-mid (orange),
+      -- 6-7: lower-mid (coral), 8: tagline (amber)
+      local gradient = {
+        [2] = "NvDashRust1",
+        [3] = "NvDashRust1",
+        [4] = "NvDashRust2",
+        [5] = "NvDashRust2",
+        [6] = "NvDashRust3",
+        [7] = "NvDashRust3",
+        [8] = "NvDashRust4",
+      }
+
+      for i, extmark in ipairs(extmarks) do
+        local hl = gradient[i]
+        if hl then
+          local details = extmark[4]
+          if details and details.virt_text and details.virt_text[1] then
+            local text = details.virt_text[1][1]
+            local col = details.virt_text_win_col
+            local row = extmark[2]
+            local id = extmark[1]
+
+            -- Replace extmark with gradient-colored version
+            vim.api.nvim_buf_del_extmark(buf, ns, id)
+            vim.api.nvim_buf_set_extmark(buf, ns, row, 0, {
+              virt_text_win_col = col,
+              virt_text = { { text, hl } },
+            })
+          end
+        end
+      end
+    end)
+  end,
+})
+
+
 

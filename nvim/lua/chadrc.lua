@@ -8,6 +8,14 @@ local M = {}
 M.base46 = {
 	theme = "onedark",
 
+	hl_add = {
+		-- Gradient highlight groups for nvdash header
+		NvDashRust1 = { fg = "#ce422b", bold = true }, -- Rust orange (top)
+		NvDashRust2 = { fg = "#d96e2a", bold = true }, -- orange (upper-mid)
+		NvDashRust3 = { fg = "#e06c75", bold = true }, -- coral (lower-mid)
+		NvDashRust4 = { fg = "#e5c07b", bold = true }, -- amber (tagline)
+	},
+
 	hl_override = {
 		-- Cursor line: high-contrast background
 		CursorLine = { bg = "#333a47", bold = false },
@@ -16,17 +24,51 @@ M.base46 = {
 		LineNr = { fg = "#3b4048" },
 		-- Cursor line left bar: vivid orange
 		CursorLineBar = { fg = "#e06c75", bg = "#333a47", bold = true },
+		-- Nvdash header fallback color (overridden by gradient autocmd)
+		NvDashAscii = { fg = "#ce422b", bold = true },
+		NvDashButtons = { fg = "#abb2bf" },
 	},
 }
 
 -- Disable NvChad built-in signature help, use blink.cmp signature instead
 M.lsp = { signature = false }
 
--- M.nvdash = { load_on_startup = true }
--- M.ui = {
---       tabufline = {
---          lazyload = false
---      }
--- }
+M.nvdash = {
+	load_on_startup = true,
+	header = {
+		"                                                     ",
+		"  ██████╗██╗   ██╗███████╗███████╗██╗  ██╗██╗   ██╗███╗   ███╗",
+		"  ██╔════╝██║   ██║██╔════╝██╔════╝██║  ██║██║   ██║████╗ ████║",
+		"  ██║     ██║   ██║█████╗  ███████╗███████║██║   ██║██╔████╔██║",
+		"  ██║     ╚██╗ ██╔╝██╔══╝  ╚════██║██╔══██║██║   ██║██║╚██╔╝██║",
+		"  ╚██████╗ ╚████╔╝███████╗███████║██║  ██║╚██████╔╝██║ ╚═╝ ██║",
+		"   ╚═════╝  ╚═══╝ ╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝",
+		"                                                     ",
+		"         A batteries-included Neovim config for Rust  ",
+		"                                                     ",
+	},
+	buttons = {
+		{ txt = "  Find File", keys = "ff", cmd = "Telescope find_files" },
+		{ txt = "  Recent Files", keys = "fo", cmd = "Telescope oldfiles" },
+		{ txt = "󰈭  Find Word", keys = "fw", cmd = "Telescope live_grep" },
+		{ txt = "󱥚  Themes", keys = "th", cmd = ":lua require('nvchad.themes').open()" },
+		{ txt = "  Mappings", keys = "ch", cmd = "NvCheatsheet" },
+
+		{ txt = "─", hl = "NvDashFooter", no_gap = true, rep = true },
+
+		{
+			txt = function()
+				local stats = require("lazy").stats()
+				local ms = math.floor(stats.startuptime) .. " ms"
+				return "  Loaded " .. stats.loaded .. "/" .. stats.count .. " plugins in " .. ms
+			end,
+			hl = "NvDashFooter",
+			no_gap = true,
+			content = "fit",
+		},
+
+		{ txt = "─", hl = "NvDashFooter", no_gap = true, rep = true },
+	},
+}
 
 return M
