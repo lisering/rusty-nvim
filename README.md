@@ -67,6 +67,11 @@ Built on NvChad · rustaceanvim · blink.cmp · LuaSnip · nvim-dap
 ## 📸 Preview
 
 <p align="center">
+  <em>Editing a Rust source file</em><br>
+  <img src="./gifs/screen.png" width="600" alt="neovim rust screenshot">
+</p>
+
+<p align="center">
   <em>Save & auto-rerun cargo run</em><br>
   <img src="./gifs/cargo-run-demo.gif" width="600" alt="cargo run demo">
 </p>

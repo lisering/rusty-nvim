@@ -67,6 +67,11 @@
 ## 📸 预览
 
 <p align="center">
+  <em>编辑 Rust 源文件</em><br>
+  <img src="./gifs/screen.png" width="600" alt="neovim rust 截图">
+</p>
+
+<p align="center">
   <em>保存后自动重跑 cargo run</em><br>
   <img src="./gifs/cargo-run-demo.gif" width="600" alt="cargo run 演示">
 </p>
