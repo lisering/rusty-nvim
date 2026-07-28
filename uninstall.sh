@@ -83,15 +83,10 @@ fi
 # ---------- 执行删除 ----------
 title "Removing Files"
 
-for dir in "${DIRS[@]}"; do
-    for suffix in "" ".bak"; do
-        target="${dir}${suffix}"
-        if [ -e "$target" ]; then
-            rm -rf "$target"
-            ok "Removed $target"
-        fi
-    done
-done
+rm -rf ~/.config/nvim{,.bak}       && ok "Removed ~/.config/nvim{,.bak}"
+rm -rf ~/.local/share/nvim{,.bak}  && ok "Removed ~/.local/share/nvim{,.bak}"
+rm -rf ~/.local/state/nvim{,.bak}  && ok "Removed ~/.local/state/nvim{,.bak}"
+rm -rf ~/.cache/nvim{,.bak}        && ok "Removed ~/.cache/nvim{,.bak}"
 
 # ---------- 验证 ----------
 title "Verification"
