@@ -68,7 +68,7 @@ Built on NvChad · rustaceanvim · blink.cmp · LuaSnip · nvim-dap
 
 <p align="center">
   <em>Editing a Rust source file</em><br>
-  <img src="./gifs/screen.png" width="600" alt="neovim rust screenshot">
+  <img src="./gifs/screen.png" alt="neovim rust screenshot">
 </p>
 
 <p align="center">

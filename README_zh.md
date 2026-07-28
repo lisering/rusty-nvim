@@ -68,7 +68,7 @@
 
 <p align="center">
   <em>编辑 Rust 源文件</em><br>
-  <img src="./gifs/screen.png" width="600" alt="neovim rust 截图">
+  <img src="./gifs/screen.png" alt="neovim rust 截图">
 </p>
 
 <p align="center">
