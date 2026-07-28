@@ -21,6 +21,8 @@ Built on NvChad · rustaceanvim · blink.cmp · LuaSnip · nvim-dap
 [![GitHub issues](https://img.shields.io/github/issues/lisering/rusty-nvim?color=F5E0DC)](https://github.com/lisering/rusty-nvim/issues)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20WSL-lightgrey)](#-prerequisites)
 
+**[English](./README.md)** · **[中文](./README_zh.md)**
+
 </div>
 
 ---

@@ -1,5 +1,7 @@
 # Neovim Rust 快捷键速查
 
+> **[English](./KEYMAPS.md)** · **[中文](./KEYMAPS_zh.md)**
+
 ## 目录
 
 - [🔥 核心高频键](#-核心高频键)

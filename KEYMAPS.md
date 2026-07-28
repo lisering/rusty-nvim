@@ -1,5 +1,7 @@
 # Neovim Rust Keymap Cheat Sheet
 
+> **[English](./KEYMAPS.md)** · **[中文](./KEYMAPS_zh.md)**
+
 ## Table of Contents
 
 - [🔥 Essential Keys](#-essential-keys)
