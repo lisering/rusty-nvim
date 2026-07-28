@@ -59,7 +59,8 @@
 | 📝 | **269 Rust Snippet** | 标准库宏、函数定义、控制流、迭代器链、设计模式、unsafe/FFI、tokio 异步、serde、Trait 实现、错误类型、闭包、泛型、内存操作 |
 | 🔍 | **全局搜索** | Telescope + ripgrep + LSP 符号 / 引用 / 调用链 |
 | 📊 | **诊断面板** | `trouble.nvim` 工作区诊断、引用、调用链可视化 |
-| 🌳 | **Treesitter** | 代码对象选取 / 跳转 / 交换 |
+| 🌳 | **Treesitter** | 代码对象选取 / 跳转 / 交换 (Rust, TOML, HTML, CSS, JS/TS, TSX) |
+| 🌐 | **前端支持** | HTML、CSS、JavaScript、TypeScript、Tailwind CSS — LSP + Prettier 格式化 |
 | 💅 | **精美 UI** | NvChad 主题、光标色条、inlay hints、语义高亮 |
 
 ---
@@ -150,6 +151,9 @@ rustup default stable
 | `stylua` | Lua 格式化 |
 | `taplo` | TOML 格式化 |
 | `biome` | JSON 格式化 |
+| `prettier` | HTML / CSS / JS / TS 格式化 |
+| `typescript-language-server` | JavaScript & TypeScript LSP |
+| `tailwindcss-language-server` | Tailwind CSS LSP |
 
 ---
 

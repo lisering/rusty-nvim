@@ -4,8 +4,12 @@ local options = {
     rust = { "rustfmt" },
     toml = { "taplo" },
     json = { "biome" },
-    -- css = { "biome" },
-    -- html = { "biome" },
+    html = { "prettier" },
+    css = { "prettier" },
+    javascript = { "prettier" },
+    typescript = { "prettier" },
+    javascriptreact = { "prettier" },
+    typescriptreact = { "prettier" },
   },
 
   format_on_save = {

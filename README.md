@@ -59,7 +59,8 @@ Built on NvChad · rustaceanvim · blink.cmp · LuaSnip · nvim-dap
 | 📝 | **269 Rust snippets** | Stdlib macros, fn defs, control flow, iterator chains, design patterns, unsafe/FFI, tokio async, serde, trait impls, error types, closures, generics, memory ops |
 | 🔍 | **Global search** | Telescope + ripgrep + LSP symbols / references / call hierarchy |
 | 📊 | **Diagnostics panel** | `trouble.nvim` for workspace diagnostics, references, call chain |
-| 🌳 | **Treesitter** | Code object select / jump / swap |
+| 🌳 | **Treesitter** | Code object select / jump / swap (Rust, TOML, HTML, CSS, JS/TS, TSX) |
+| 🌐 | **Frontend support** | HTML, CSS, JavaScript, TypeScript, Tailwind CSS — LSP + Prettier formatting |
 | 💅 | **Beautiful UI** | NvChad theming, cursor line bar, inlay hints, semantic highlighting |
 
 ---
@@ -150,6 +151,9 @@ Installed by `mason-tool-installer` 3 seconds after first launch:
 | `stylua` | Lua formatter |
 | `taplo` | TOML formatter |
 | `biome` | JSON formatter |
+| `prettier` | HTML / CSS / JS / TS formatter |
+| `typescript-language-server` | JavaScript & TypeScript LSP |
+| `tailwindcss-language-server` | Tailwind CSS LSP |
 
 ---
 

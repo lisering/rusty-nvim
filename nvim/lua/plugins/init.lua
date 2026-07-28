@@ -440,6 +440,9 @@ return {
           "stylua",
           "taplo",
           "biome",
+          "prettier",
+          "tailwindcss-language-server",
+          "typescript-language-server",
         },
         auto_update = false,
         run_on_start = true,
@@ -692,7 +695,16 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
-      vim.list_extend(opts.ensure_installed, { "rust", "toml" })
+      vim.list_extend(opts.ensure_installed, {
+        "rust",
+        "toml",
+        "html",
+        "css",
+        "javascript",
+        "typescript",
+        "tsx",
+        "jsx",
+      })
     end,
   },
 
