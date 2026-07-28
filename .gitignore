@@ -1,0 +1,15 @@
+# Neovim runtime
+.netrwhist
+*.swp
+*.swo
+*~
+
+# Claude AI local settings
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local test/tape files
+tapes/

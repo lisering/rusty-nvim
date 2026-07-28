@@ -8,11 +8,19 @@ local M = {}
 M.base46 = {
 	theme = "onedark",
 
-	-- hl_override = {
-	-- 	Comment = { italic = true },
-	-- 	["@comment"] = { italic = true },
-	-- },
+	hl_override = {
+		-- Cursor line: high-contrast background
+		CursorLine = { bg = "#333a47", bold = false },
+		CursorLineNr = { fg = "#e5c07b", bold = true },
+		CursorColumn = { bg = "#333a47" },
+		LineNr = { fg = "#3b4048" },
+		-- Cursor line left bar: vivid orange
+		CursorLineBar = { fg = "#e06c75", bg = "#333a47", bold = true },
+	},
 }
+
+-- Disable NvChad built-in signature help, use blink.cmp signature instead
+M.lsp = { signature = false }
 
 -- M.nvdash = { load_on_startup = true }
 -- M.ui = {
