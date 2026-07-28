@@ -33,10 +33,10 @@
 - [📸 预览](#-预览)
 - [📋 前置依赖](#-前置依赖)
 - [🚀 安装](#-安装)
-- [🗑️ 卸载](#-卸载)
+- [🗑 卸载](#-卸载)
 - [⚡ 快速上手](#-快速上手)
 - [🎬 实操示例](#-实操示例)
-- [⌨️ 完整快捷键](#-完整快捷键)
+- [⌨ 完整快捷键](#-完整快捷键)
 - [📝 Snippet 列表](#-snippet-列表)
 - [📁 目录结构](#-目录结构)
 - [🔧 自定义](#-自定义)
@@ -90,7 +90,7 @@
 | [git](https://git-scm.com) | 2.20+ | `brew install git` | `apt install git` | `dnf install git` | `pacman -S git` |
 | **Nerd Font** | 任意 | `brew install --cask font-jetbrains-mono-nerd-font` | [下载](https://www.nerdfonts.com/font-downloads) | 同左 | 同左 |
 
-> ⚠️ **必须安装 Nerd Font 并设为终端字体**，否则图标显示为乱码方块。
+> ⚠ **必须安装 Nerd Font 并设为终端字体**，否则图标显示为乱码方块。
 
 <details>
 <summary>📦 一键安装所有依赖（点击展开）</summary>
@@ -177,7 +177,7 @@ nvim
 ```
 
 <details>
-<summary>🖥️ Windows / WSL 安装说明</summary>
+<summary>🖥 Windows / WSL 安装说明</summary>
 
 **WSL（推荐 Windows 用户使用）：**
 
@@ -198,7 +198,7 @@ git clone https://github.com/lisering/rusty-nvim.git "$env:LOCALAPPDATA\nvim"
 nvim
 ```
 
-> ⚠️ 原生 Windows 未经充分测试，推荐使用 WSL。
+> ⚠ 原生 Windows 未经充分测试，推荐使用 WSL。
 
 </details>
 
@@ -217,7 +217,7 @@ nvim
 
 ---
 
-## 🗑️ 卸载
+## 🗑 卸载
 
 ### 方式一：一行命令（推荐）
 
@@ -499,7 +499,7 @@ struct User {
 
 ---
 
-## ⌨️ 完整快捷键
+## ⌨ 完整快捷键
 
 > `<leader>` = 空格键 ｜ `<C-x>` = Ctrl+x ｜ `<S-Tab>` = Shift+Tab
 

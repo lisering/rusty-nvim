@@ -33,10 +33,10 @@ Built on NvChad · rustaceanvim · blink.cmp · LuaSnip · nvim-dap
 - [📸 Preview](#-preview)
 - [📋 Prerequisites](#-prerequisites)
 - [🚀 Installation](#-installation)
-- [🗑️ Uninstallation](#-uninstallation)
+- [🗑 Uninstallation](#-uninstallation)
 - [⚡ Quick Start](#-quick-start)
 - [🎬 Practical Examples](#-practical-examples)
-- [⌨️ Full Keymap Reference](#-full-keymap-reference)
+- [⌨ Full Keymap Reference](#-full-keymap-reference)
 - [📝 Snippet Catalog](#-snippet-catalog)
 - [📁 Directory Structure](#-directory-structure)
 - [🔧 Customization](#-customization)
@@ -90,7 +90,7 @@ Built on NvChad · rustaceanvim · blink.cmp · LuaSnip · nvim-dap
 | [git](https://git-scm.com) | 2.20+ | `brew install git` | `apt install git` | `dnf install git` | `pacman -S git` |
 | **Nerd Font** | any | `brew install --cask font-jetbrains-mono-nerd-font` | [Download](https://www.nerdfonts.com/font-downloads) | same | same |
 
-> ⚠️ **You must install a Nerd Font and set it as your terminal font**, otherwise icons will show as boxes.
+> ⚠ **You must install a Nerd Font and set it as your terminal font**, otherwise icons will show as boxes.
 
 <details>
 <summary>📦 Quick install all dependencies (click to expand)</summary>
@@ -177,7 +177,7 @@ nvim
 ```
 
 <details>
-<summary>🖥️ Windows / WSL instructions</summary>
+<summary>🖥 Windows / WSL instructions</summary>
 
 **WSL (recommended for Windows users):**
 
@@ -198,7 +198,7 @@ git clone https://github.com/lisering/rusty-nvim.git "$env:LOCALAPPDATA\nvim"
 nvim
 ```
 
-> ⚠️ Native Windows is not fully tested. WSL is recommended.
+> ⚠ Native Windows is not fully tested. WSL is recommended.
 
 </details>
 
@@ -217,7 +217,7 @@ Launch nvim
 
 ---
 
-## 🗑️ Uninstallation
+## 🗑 Uninstallation
 
 ### Option A: One-liner (recommended)
 
@@ -495,7 +495,7 @@ struct User {
 
 ---
 
-## ⌨️ Full Keymap Reference
+## ⌨ Full Keymap Reference
 
 > `<leader>` = Space | `<C-x>` = Ctrl+x | `<S-Tab>` = Shift+Tab
 
