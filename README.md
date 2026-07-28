@@ -13,7 +13,7 @@ Built on NvChad · rustaceanvim · blink.cmp · LuaSnip · nvim-dap
 [![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?logo=neovim&logoColor=white)](https://neovim.io)
 [![Rust](https://img.shields.io/badge/Rust-stable-CE422B?logo=rust&logoColor=white)](https://www.rust-lang.org)
 [![License](https://img.shields.io/badge/License-Unlicense-blue)](./LICENSE)
-[![Snippets](https://img.shields.io/badge/Snippets-269%20Rust-orange)](./luasnippets/rust.lua)
+[![Snippets](https://img.shields.io/badge/Snippets-269%20Rust-orange)](./nvim/luasnippets/rust.lua)
 
 [![GitHub stars](https://img.shields.io/github/stars/lisering/rusty-nvim?style=flat&color=yellow)](https://github.com/lisering/rusty-nvim/stargazers)
 [![GitHub last commit](https://img.shields.io/github/last-commit/lisering/rusty-nvim?color=8bd5ca)](https://github.com/lisering/rusty-nvim/commits)
@@ -164,8 +164,8 @@ curl -fsSL https://raw.githubusercontent.com/lisering/rusty-nvim/main/install.sh
 ### Option B: Clone + Run Script
 
 ```bash
-git clone https://github.com/lisering/rusty-nvim.git ~/.config/nvim
-cd ~/.config/nvim && bash install.sh
+git clone https://github.com/lisering/rusty-nvim.git
+cd rusty-nvim && bash install.sh
 ```
 
 ### Option C: Manual
@@ -174,8 +174,10 @@ cd ~/.config/nvim && bash install.sh
 # Backup existing config
 mv ~/.config/nvim ~/.config/nvim.bak 2>/dev/null || true
 
-# Clone
-git clone https://github.com/lisering/rusty-nvim.git ~/.config/nvim
+# Clone and copy only the nvim/ config folder
+git clone https://github.com/lisering/rusty-nvim.git /tmp/rusty-nvim
+cp -r /tmp/rusty-nvim/nvim/. ~/.config/nvim/
+rm -rf /tmp/rusty-nvim
 
 # Launch — plugins auto-install on first run
 nvim
@@ -192,14 +194,16 @@ wsl --install
 sudo apt update && sudo apt install -y ripgrep git fd-find
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # Install Neovim 0.10+ via AppImage (see Prerequisites)
-git clone https://github.com/lisering/rusty-nvim.git ~/.config/nvim
+curl -fsSL https://raw.githubusercontent.com/lisering/rusty-nvim/main/install.sh | bash
 nvim
 ```
 
 **Native Windows** (experimental — paths use `%LOCALAPPDATA%\nvim`):
 
 ```powershell
-git clone https://github.com/lisering/rusty-nvim.git "$env:LOCALAPPDATA\nvim"
+git clone https://github.com/lisering/rusty-nvim.git $env:TEMP\rusty-nvim
+New-Item -ItemType Directory -Force $env:LOCALAPPDATA\nvim
+copy-item -Path $env:TEMP\rusty-nvim\nvim\* -Destination $env:LOCALAPPDATA\nvim -Recurse
 nvim
 ```
 
@@ -1040,30 +1044,40 @@ struct User {
 ## 📁 Directory Structure
 
 ```
-~/.config/nvim/
-├── init.lua                    # Entry: bootstrap lazy.nvim + load modules
-├── install.sh                  # One-click installer (dep check + backup)
-├── uninstall.sh                # One-click uninstaller (removes config + data + cache)
-├── .stylua.toml                # Lua formatting config (for stylua)
+~/.config/nvim/                     # Installed config (copied from repo's nvim/ folder)
+├── init.lua                        # Entry: bootstrap lazy.nvim + load modules
+├── .stylua.toml                    # Lua formatting config (for stylua)
 ├── lua/
-│   ├── autocmds.lua            # Autocmds: save-rerun / inlay hints / cursor bar
-│   ├── chadrc.lua              # NvChad theme / UI config
+│   ├── autocmds.lua                # Autocmds: save-rerun / inlay hints / cursor bar
+│   ├── chadrc.lua                  # NvChad theme / UI config
 │   ├── configs/
-│   │   ├── conform.lua         # Formatting: rustfmt / stylua / taplo / biome
-│   │   ├── lazy.lua            # lazy.nvim config
-│   │   └── lspconfig.lua       # LSP: html / cssls
-│   ├── mappings.lua            # All custom keymaps
-│   ├── options.lua             # Neovim options
+│   │   ├── conform.lua             # Formatting: rustfmt / stylua / taplo / biome
+│   │   ├── lazy.lua                # lazy.nvim config
+│   │   └── lspconfig.lua           # LSP: html / cssls
+│   ├── mappings.lua                # All custom keymaps
+│   ├── options.lua                 # Neovim options
 │   └── plugins/
-│       └── init.lua            # All plugin configs
+│       └── init.lua                # All plugin configs
 ├── luasnippets/
-│   └── rust.lua                # Rust custom snippets (269, Rust-only)
-├── gifs/                       # Demo GIFs for README
-├── KEYMAPS.md                  # Keymap cheat sheet (English)
-├── KEYMAPS_zh.md               # 快捷键速查表 (Chinese)
-├── lazy-lock.json              # Plugin version lockfile
-├── README.md                   # English docs (this file)
-├── README_zh.md                # Chinese docs
+│   └── rust.lua                    # Rust custom snippets (269, Rust-only)
+└── lazy-lock.json                  # Plugin version lockfile
+```
+
+**Repo structure** (what you clone from GitHub):
+
+```
+rusty-nvim/
+├── nvim/                           # ← Pure Neovim config (copied to ~/.config/nvim/)
+│   ├── init.lua
+│   ├── .stylua.toml
+│   ├── lazy-lock.json
+│   ├── lua/                        # ... (same as installed layout above)
+│   └── luasnippets/
+├── install.sh                      # One-click installer
+├── uninstall.sh                    # One-click uninstaller
+├── gifs/                           # Demo GIFs for README
+├── KEYMAPS.md / KEYMAPS_zh.md      # Keymap cheat sheets
+├── README.md / README_zh.md        # Documentation
 └── LICENSE
 ```
 

@@ -7,8 +7,8 @@
 #   curl -fsSL https://raw.githubusercontent.com/lisering/rusty-nvim/main/install.sh | bash
 #   git clone https://github.com/lisering/rusty-nvim.git && cd rusty-nvim && bash install.sh
 #
-# 原理: 仅克隆 Neovim 必要配置文件 (sparse-checkout)
-#       运行 nvim 后 lazy.nvim 自动安装所有插件
+# 原理: 仅克隆 nvim/ 子目录 (sparse-checkout)
+#       复制到 ~/.config/nvim/ 后 lazy.nvim 自动安装所有插件
 # ============================================================
 
 set -euo pipefail
@@ -73,25 +73,28 @@ if [ -d "$NVIM_DATA_DIR" ]; then
     warn "Existing nvim data dir ($DATA_SIZE) — plugin conflicts? run: rm -rf $NVIM_DATA_DIR"
 fi
 
-# ---------- 克隆配置 (仅必要文件) ----------
+# ---------- 克隆配置 (仅 nvim/ 子目录) ----------
 title "Installing Config"
 
-info "Cloning from $REPO_URL (sparse checkout)"
+info "Cloning from $REPO_URL (sparse checkout: nvim/ only)"
 
-# 优先使用 sparse-checkout，仅下载必要文件；不支持则 fallback 到全量克隆后清理
-if git clone --depth 1 --filter=blob:none --sparse "$REPO_URL" "$NVIM_CONFIG_DIR" 2>/dev/null; then
-    cd "$NVIM_CONFIG_DIR"
-    git sparse-checkout set --no-cone /init.lua /lua /luasnippets /lazy-lock.json
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "$TMPDIR"' EXIT
+
+# 优先使用 sparse-checkout，仅下载 nvim/ 子目录；不支持则 fallback 到全量克隆
+if git clone --depth 1 --filter=blob:none --sparse "$REPO_URL" "$TMPDIR" 2>/dev/null; then
+    cd "$TMPDIR"
+    git sparse-checkout set --no-cone /nvim
 else
     info "Sparse checkout unavailable, falling back to full clone..."
-    git clone --depth 1 "$REPO_URL" "$NVIM_CONFIG_DIR"
-    cd "$NVIM_CONFIG_DIR"
-    rm -f  install.sh uninstall.sh README.md README_zh.md KEYMAPS.md KEYMAPS_zh.md LICENSE
-    rm -rf gifs
+    git clone --depth 1 "$REPO_URL" "$TMPDIR"
 fi
 
-# 移除 .git — 只保留配置文件，不需要 git 历史
-rm -rf .git
+# 将 nvim/ 子目录内容复制到配置目录 (含隐藏文件 .stylua.toml)
+shopt -s dotglob
+mkdir -p "$NVIM_CONFIG_DIR"
+cp -r "$TMPDIR"/nvim/* "$NVIM_CONFIG_DIR/"
+shopt -u dotglob
 
 ok "Config installed to $NVIM_CONFIG_DIR"
 

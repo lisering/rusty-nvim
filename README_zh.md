@@ -13,7 +13,7 @@
 [![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?logo=neovim&logoColor=white)](https://neovim.io)
 [![Rust](https://img.shields.io/badge/Rust-stable-CE422B?logo=rust&logoColor=white)](https://www.rust-lang.org)
 [![License](https://img.shields.io/badge/License-Unlicense-blue)](./LICENSE)
-[![Snippets](https://img.shields.io/badge/Snippets-269%20Rust-orange)](./luasnippets/rust.lua)
+[![Snippets](https://img.shields.io/badge/Snippets-269%20Rust-orange)](./nvim/luasnippets/rust.lua)
 
 [![GitHub stars](https://img.shields.io/github/stars/lisering/rusty-nvim?style=flat&color=yellow)](https://github.com/lisering/rusty-nvim/stargazers)
 [![GitHub last commit](https://img.shields.io/github/last-commit/lisering/rusty-nvim?color=8bd5ca)](https://github.com/lisering/rusty-nvim/commits)
@@ -164,8 +164,8 @@ curl -fsSL https://raw.githubusercontent.com/lisering/rusty-nvim/main/install.sh
 ### 方式二：克隆 + 运行脚本
 
 ```bash
-git clone https://github.com/lisering/rusty-nvim.git ~/.config/nvim
-cd ~/.config/nvim && bash install.sh
+git clone https://github.com/lisering/rusty-nvim.git
+cd rusty-nvim && bash install.sh
 ```
 
 ### 方式三：手动安装
@@ -174,8 +174,10 @@ cd ~/.config/nvim && bash install.sh
 # 备份已有配置
 mv ~/.config/nvim ~/.config/nvim.bak 2>/dev/null || true
 
-# 克隆
-git clone https://github.com/lisering/rusty-nvim.git ~/.config/nvim
+# 克隆并仅复制 nvim/ 配置文件夹
+git clone https://github.com/lisering/rusty-nvim.git /tmp/rusty-nvim
+cp -r /tmp/rusty-nvim/nvim/. ~/.config/nvim/
+rm -rf /tmp/rusty-nvim
 
 # 启动 — 首次运行自动安装所有插件
 nvim
@@ -192,14 +194,16 @@ wsl --install
 sudo apt update && sudo apt install -y ripgrep git fd-find
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # 通过 AppImage 安装 Neovim 0.10+（见前置依赖）
-git clone https://github.com/lisering/rusty-nvim.git ~/.config/nvim
+curl -fsSL https://raw.githubusercontent.com/lisering/rusty-nvim/main/install.sh | bash
 nvim
 ```
 
 **原生 Windows**（实验性 — 路径为 `%LOCALAPPDATA%\nvim`）：
 
 ```powershell
-git clone https://github.com/lisering/rusty-nvim.git "$env:LOCALAPPDATA\nvim"
+git clone https://github.com/lisering/rusty-nvim.git $env:TEMP\rusty-nvim
+New-Item -ItemType Directory -Force $env:LOCALAPPDATA\nvim
+copy-item -Path $env:TEMP\rusty-nvim\nvim\* -Destination $env:LOCALAPPDATA\nvim -Recurse
 nvim
 ```
 
@@ -1044,36 +1048,46 @@ struct User {
 ## 📁 目录结构
 
 ```
-~/.config/nvim/
-├── init.lua                    # 入口: bootstrap lazy.nvim + 加载模块
-├── install.sh                  # 一键安装脚本（依赖检测 + 备份）
-├── uninstall.sh                # 一键卸载脚本（彻底删除配置 + 数据 + 缓存）
-├── .stylua.toml                # Lua 格式化配置 (stylua)
+~/.config/nvim/                     # 安装后的配置（从仓库的 nvim/ 文件夹复制）
+├── init.lua                        # 入口: bootstrap lazy.nvim + 加载模块
+├── .stylua.toml                    # Lua 格式化配置 (stylua)
 ├── lua/
-│   ├── autocmds.lua            # 自动命令: 保存重跑 / inlay hints / 光标色条
-│   ├── chadrc.lua              # NvChad 主题 / UI 配置
+│   ├── autocmds.lua                # 自动命令: 保存重跑 / inlay hints / 光标色条
+│   ├── chadrc.lua                  # NvChad 主题 / UI 配置
 │   ├── configs/
-│   │   ├── conform.lua         # 格式化: rustfmt / stylua / taplo / biome
-│   │   ├── lazy.lua            # lazy.nvim 配置
-│   │   └── lspconfig.lua       # LSP: html / cssls
-│   ├── mappings.lua            # 全部自定义快捷键
-│   ├── options.lua             # Neovim 选项
+│   │   ├── conform.lua             # 格式化: rustfmt / stylua / taplo / biome
+│   │   ├── lazy.lua                # lazy.nvim 配置
+│   │   └── lspconfig.lua           # LSP: html / cssls
+│   ├── mappings.lua                # 全部自定义快捷键
+│   ├── options.lua                 # Neovim 选项
 │   └── plugins/
-│       └── init.lua            # 所有插件配置
+│       └── init.lua                # 所有插件配置
 ├── luasnippets/
-│   └── rust.lua                # Rust 全量自定义 snippet (269, 仅 Rust)
-├── gifs/                       # README 演示 GIF
-├── KEYMAPS.md                  # Keymap cheat sheet (English)
-├── KEYMAPS_zh.md               # 快捷键速查表（中文）
-├── lazy-lock.json              # 插件版本锁定
-├── README.md                   # English docs
-├── README_zh.md                # 中文文档（本文件）
+│   └── rust.lua                    # Rust 全量自定义 snippet (269, 仅 Rust)
+└── lazy-lock.json                  # 插件版本锁定
+```
+
+**仓库结构**（从 GitHub 克隆的完整内容）：
+
+```
+rusty-nvim/
+├── nvim/                           # ← 纯 Neovim 配置（复制到 ~/.config/nvim/）
+│   ├── init.lua
+│   ├── .stylua.toml
+│   ├── lazy-lock.json
+│   ├── lua/                        # ... (与上方安装后的布局相同)
+│   └── luasnippets/
+├── install.sh                      # 一键安装脚本
+├── uninstall.sh                    # 一键卸载脚本
+├── gifs/                           # README 演示 GIF
+├── KEYMAPS.md / KEYMAPS_zh.md      # 快捷键速查表
+├── README.md / README_zh.md        # 文档
 └── LICENSE
 ```
 
-### luasnippets/ 为什么放在根目录？
+### luasnippets/ 为什么放在 nvim/ 根目录？
 
-这是 NvChad 的约定路径。`init.lua` 中通过 `vim.g.lua_snippets_path` 指向它，LuaSnip 的 `from_lua` loader 期望一个独立的文件目录（每个 `.lua` 文件返回一个 filetype 的 snippet 表），而不是 Lua 模块路径。放在根目录是正确的。
+这是 NvChad 的约定路径。`init.lua` 中通过 `vim.g.lua_snippets_path` 指向它，LuaSnip 的 `from_lua` loader 期望一个独立的文件目录（每个 `.lua` 文件返回一个 filetype 的 snippet 表），而不是 Lua 模块路径。放在配置根目录是正确的。
 
 ---
 
