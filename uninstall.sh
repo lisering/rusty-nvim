@@ -66,13 +66,14 @@ echo ""
 
 if [ "$FORCE" = false ]; then
     # Read from /dev/tty to support curl | bash (stdin is the pipe)
-    if ! read -rp "Are you sure? [y/N] " confirm < /dev/tty 2>/dev/null; then
+    echo -n "Are you sure? [Y/n] "
+    if ! read -r confirm < /dev/tty 2>/dev/null; then
         fail "Non-interactive mode detected. Use --force to skip confirmation."
         echo "  bash uninstall.sh --force"
         exit 1
     fi
     case "$confirm" in
-        [yY]|[yY][eE][sS]) ;;
+        ""|[yY]|[yY][eE][sS]) ;;
         *)
             echo "Aborted."
             exit 0
