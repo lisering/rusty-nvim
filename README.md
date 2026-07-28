@@ -219,13 +219,18 @@ nvim
 
 ```
 Launch nvim
+  ├─ nvdash dashboard shows RUSTY ASCII art header
   ├─ lazy.nvim auto-clones all plugins         (~30s)
-  ├─ Treesitter auto-installs rust/toml/lua      parsers
+  ├─ Treesitter auto-installs parsers:
+  │   ├─ rust, toml, lua
+  │   └─ html, css, javascript, typescript, tsx
   └─ 3s later, mason-tool-installer installs:
-      ├─ rust-analyzer
-      ├─ codelldb
-      ├─ stylua / taplo / biome
-      └─ ✅ Done! Open a .rs file and start coding
+      ├─ rust-analyzer, codelldb
+      ├─ stylua, taplo, biome
+      ├─ prettier (HTML/CSS/JS/TS formatter)
+      ├─ typescript-language-server
+      ├─ tailwindcss-language-server
+      └─ ✅ Done! Open a .rs or .tsx file and start coding
 ```
 
 > 💡 **Plugin issues after install?** If any plugin failed to install or behaves unexpectedly, run these inside Neovim:
@@ -1059,11 +1064,11 @@ struct User {
 ├── .stylua.toml                    # Lua formatting config (for stylua)
 ├── lua/
 │   ├── autocmds.lua                # Autocmds: save-rerun / inlay hints / cursor bar
-│   ├── chadrc.lua                  # NvChad theme / UI config
+│   ├── chadrc.lua                  # NvChad theme / UI / nvdash dashboard config
 │   ├── configs/
-│   │   ├── conform.lua             # Formatting: rustfmt / stylua / taplo / biome
+│   │   ├── conform.lua             # Formatting: rustfmt / stylua / taplo / biome / prettier
 │   │   ├── lazy.lua                # lazy.nvim config
-│   │   └── lspconfig.lua           # LSP: html / cssls
+│   │   └── lspconfig.lua           # LSP: html / cssls / ts_ls / tailwindcss
 │   ├── mappings.lua                # All custom keymaps
 │   ├── options.lua                 # Neovim options
 │   └── plugins/
@@ -1106,6 +1111,24 @@ Edit `lua/chadrc.lua`:
 ```lua
 M.base46 = {
     theme = "onedark",  -- "catppuccin", "tokyonight", "gruvbox", etc.
+}
+```
+
+### Change dashboard header
+
+Edit the `M.nvdash.header` table in `lua/chadrc.lua`:
+
+```lua
+M.nvdash = {
+    load_on_startup = true,
+    header = {
+        "           your ASCII art here           ",
+    },
+    buttons = {
+        { txt = "▸  Find File", keys = "ff", cmd = "Telescope find_files" },
+        -- add or remove buttons
+        { txt = "▸  Quit", keys = "q", cmd = "qa" },
+    },
 }
 ```
 

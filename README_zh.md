@@ -219,13 +219,18 @@ nvim
 
 ```
 启动 nvim
+  ├─ nvdash 启动画面显示 RUSTY ASCII art
   ├─ lazy.nvim 自动 clone 所有插件         (~30秒)
-  ├─ Treesitter 自动安装 rust/toml/lua      解析器
+  ├─ Treesitter 自动安装解析器：
+  │   ├─ rust, toml, lua
+  │   └─ html, css, javascript, typescript, tsx
   └─ 3秒后 mason-tool-installer 自动安装：
-      ├─ rust-analyzer
-      ├─ codelldb
-      ├─ stylua / taplo / biome
-      └─ ✅ 完成！打开 .rs 文件即可使用
+      ├─ rust-analyzer, codelldb
+      ├─ stylua, taplo, biome
+      ├─ prettier (HTML/CSS/JS/TS 格式化)
+      ├─ typescript-language-server
+      ├─ tailwindcss-language-server
+      └─ ✅ 完成！打开 .rs 或 .tsx 文件即可使用
 ```
 
 > 💡 **安装后插件有问题？** 如果插件安装失败或行为异常，在 Neovim 中执行以下命令：
@@ -1063,11 +1068,11 @@ struct User {
 ├── .stylua.toml                    # Lua 格式化配置 (stylua)
 ├── lua/
 │   ├── autocmds.lua                # 自动命令: 保存重跑 / inlay hints / 光标色条
-│   ├── chadrc.lua                  # NvChad 主题 / UI 配置
+│   ├── chadrc.lua                  # NvChad 主题 / UI / nvdash 启动画面配置
 │   ├── configs/
-│   │   ├── conform.lua             # 格式化: rustfmt / stylua / taplo / biome
+│   │   ├── conform.lua             # 格式化: rustfmt / stylua / taplo / biome / prettier
 │   │   ├── lazy.lua                # lazy.nvim 配置
-│   │   └── lspconfig.lua           # LSP: html / cssls
+│   │   └── lspconfig.lua           # LSP: html / cssls / ts_ls / tailwindcss
 │   ├── mappings.lua                # 全部自定义快捷键
 │   ├── options.lua                 # Neovim 选项
 │   └── plugins/
@@ -1110,6 +1115,24 @@ rusty-nvim/
 ```lua
 M.base46 = {
     theme = "onedark",  -- "catppuccin", "tokyonight", "gruvbox" 等
+}
+```
+
+### 修改启动画面
+
+编辑 `lua/chadrc.lua` 中的 `M.nvdash.header` 表：
+
+```lua
+M.nvdash = {
+    load_on_startup = true,
+    header = {
+        "           你的 ASCII art           ",
+    },
+    buttons = {
+        { txt = "▸  Find File", keys = "ff", cmd = "Telescope find_files" },
+        -- 添加或删除按钮
+        { txt = "▸  Quit", keys = "q", cmd = "qa" },
+    },
 }
 ```
 
