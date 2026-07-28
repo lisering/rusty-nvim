@@ -2,7 +2,7 @@
 # ============================================================
 # rusty-nvim — Installation Script
 # 适用: macOS / Linux / WSL
-# 功能: 检测依赖 → 备份旧配置 → 克隆仓库 → 首次启动引导
+# 功能: 检测依赖 → 备份旧配置 → 克隆必要配置文件
 #
 # 用法:
 #   方式一 (curl):  curl -fsSL https://raw.githubusercontent.com/<user>/<repo>/main/install.sh | bash
@@ -36,12 +36,6 @@ DEFAULT_REPO="https://github.com/lisering/rusty-nvim.git"
 REPO_URL="${REPO_URL:-$DEFAULT_REPO}"
 NVIM_CONFIG_DIR="${NVIM_CONFIG_DIR:-$HOME/.config/nvim}"
 NVIM_DATA_DIR="${NVIM_DATA_DIR:-$HOME/.local/share/nvim}"
-
-# 检测是否为 TTY（交互模式），curl 管道时为 false
-IS_TTY=false
-if [ -t 0 ]; then
-    IS_TTY=true
-fi
 
 # ---------- 依赖检测 ----------
 title "Checking Dependencies"
@@ -192,48 +186,33 @@ if [ -f "$SCRIPT_DIR/init.lua" ]; then
         ok "Symlinked $SCRIPT_DIR → $NVIM_CONFIG_DIR"
     fi
 else
-    # curl 管道运行: clone 仓库
+    # curl 管道运行: clone 仓库，仅保留 Neovim 必要文件
     info "Cloning from $REPO_URL"
     git clone --depth 1 "$REPO_URL" "$NVIM_CONFIG_DIR"
-    ok "Cloned to $NVIM_CONFIG_DIR"
-fi
 
-# ---------- 首次启动 ----------
-title "First Launch — Plugin Bootstrap"
+    info "Cleaning up non-essential files..."
+    rm -rf "$NVIM_CONFIG_DIR/.git"
+    rm -f  "$NVIM_CONFIG_DIR/install.sh" "$NVIM_CONFIG_DIR/uninstall.sh"
+    rm -f  "$NVIM_CONFIG_DIR/README.md" "$NVIM_CONFIG_DIR/README_zh.md"
+    rm -f  "$NVIM_CONFIG_DIR/KEYMAPS.md" "$NVIM_CONFIG_DIR/KEYMAPS_zh.md"
+    rm -f  "$NVIM_CONFIG_DIR/LICENSE"
+    rm -rf "$NVIM_CONFIG_DIR/gifs"
 
-info "Launching Neovim to bootstrap plugins..."
-info "This will:"
-echo "  1. lazy.nvim auto-clones all plugins"
-echo "  2. Mason auto-installs rust-analyzer, codelldb, etc. (after 3s delay)"
-echo "  3. Treesitter installs rust/toml parsers"
-echo ""
-
-if [ "$IS_TTY" = true ]; then
-    echo "Press any key to continue (or Ctrl+C to skip)..."
-    read -r -t 30 -n 1 || true
-else
-    info "Non-interactive mode, proceeding automatically..."
-fi
-
-# 尝试 headless sync，失败则提示手动启动
-info "Running headless plugin sync..."
-if nvim --headless "+Lazy! sync" +qa 2>/dev/null; then
-    ok "Plugin sync completed"
-else
-    warn "Headless sync had issues (normal for first run)."
-    info "Please open Neovim manually to finish setup:"
-    echo "  nvim"
+    ok "Installed to $NVIM_CONFIG_DIR"
 fi
 
 # ---------- 完成 ----------
 echo ""
 ok "Installation complete!"
 echo ""
+info "Run nvim to auto-install plugins:"
+echo "  nvim"
+echo ""
 title "Next Steps"
-echo "  1. Open a Rust project:  cd ~/my-rust-project && nvim src/main.rs"
-echo "  2. Wait for rust-analyzer to index (check statusline)"
-echo "  3. Press <Space>rr to run, <Space>rc to check"
-echo "  4. Press <Space>ff to find files, <C-n> for file tree"
-echo "  5. See README.md for full documentation"
+echo "  1. Run nvim — plugins will auto-install on first launch"
+echo "  2. Open a Rust project:  cd ~/my-rust-project && nvim src/main.rs"
+echo "  3. Wait for rust-analyzer to index (check statusline)"
+echo "  4. Press <Space>rr to run, <Space>rc to check"
+echo "  5. Press <Space>ff to find files, <C-n> for file tree"
 echo ""
 echo -e "${BOLD}${GREEN}Happy hacking! 🦀${NC}"
