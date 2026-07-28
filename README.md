@@ -224,6 +224,12 @@ Launch nvim
       └─ ✅ Done! Open a .rs file and start coding
 ```
 
+> 💡 **Plugin issues after install?** If any plugin failed to install or behaves unexpectedly, run these inside Neovim:
+> - `:Lazy sync` — re-install missing plugins and clean up stale ones
+> - `:Lazy update` — update all plugins to latest version
+> - `:Lazy` — open the plugin manager UI to inspect status
+> - `:Mason` — check LSP / DAP / formatter installation status
+
 ---
 
 ## 🗑 Uninstallation
@@ -1162,7 +1168,9 @@ When the menu is visible, Tab navigates the list; when the menu is not visible a
 <details>
 <summary><b>How to update all plugins?</b></summary>
 
-Run `:Lazy sync`.
+Run `:Lazy sync` — this updates all plugins, installs any missing ones, and cleans up stale plugins.
+
+If you only want to update plugin versions without installing/removing: `:Lazy update`.
 
 </details>
 
