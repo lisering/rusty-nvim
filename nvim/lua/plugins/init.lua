@@ -272,6 +272,7 @@ return {
       -- this only provides adapter definition for nvim-dap's manual dap.continue()
       -- NOTE: for type="server", nvim-dap requires `executable` to be a TABLE, not a function.
       -- A function here causes: "attempt to index field 'executable' (a function value)"
+      -- NOTE: --liblldb is REQUIRED on macOS/Linux, without it codelldb fails to initialize
       local mason_codelldb = vim.fn.stdpath("data")
         .. "/mason/packages/codelldb/extension/adapter/codelldb"
       local codelldb_cmd = mason_codelldb
@@ -279,12 +280,22 @@ return {
         vim.notify("codelldb not installed, run :MasonInstall codelldb", vim.log.levels.WARN)
         codelldb_cmd = "codelldb"
       end
+      -- Cross-platform liblldb path: macOS=.dylib Linux=.so Windows=.dll
+      local liblldb_name = "liblldb.dylib"
+      local sysname = vim.uv.os_uname().sysname
+      if sysname == "Linux" then
+        liblldb_name = "liblldb.so"
+      elseif sysname == "Windows_NT" then
+        liblldb_name = "liblldb.dll"
+      end
+      local liblldb_path = vim.fn.stdpath("data")
+        .. "/mason/packages/codelldb/extension/lldb/lib/" .. liblldb_name
       dap.adapters.codelldb = {
         type = "server",
         port = "${port}",
         executable = {
           command = codelldb_cmd,
-          args = { "--port", "${port}" },
+          args = { "--liblldb", liblldb_path, "--port", "${port}" },
         },
       }
 
