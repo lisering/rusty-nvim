@@ -405,6 +405,9 @@ return {
       -- Auto open/close DAP UI
       dap.listeners.before.attach.dapui_config = function() dapui.open() end
       dap.listeners.before.launch.dapui_config = function() dapui.open() end
+      -- codelldb 的 launch 响应可能不触发 before.launch 监听器，
+      -- 用 event_initialized 作为可靠的 fallback 打开 DAP UI
+      dap.listeners.after.event_initialized.dapui_config = function() dapui.open() end
       dap.listeners.before.event_terminated.dapui_config = function() dapui.close() end
       dap.listeners.before.event_exited.dapui_config = function() dapui.close() end
     end,
