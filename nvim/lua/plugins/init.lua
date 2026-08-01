@@ -270,18 +270,22 @@ return {
 
       -- codelldb adapter: rustaceanvim has its own adapter config for RustLsp debuggables,
       -- this only provides adapter definition for nvim-dap's manual dap.continue()
+      -- NOTE: for type="server", nvim-dap requires `executable` to be a TABLE, not a function.
+      -- A function here causes: "attempt to index field 'executable' (a function value)"
+      local mason_codelldb = vim.fn.stdpath("data")
+        .. "/mason/packages/codelldb/extension/adapter/codelldb"
+      local codelldb_cmd = mason_codelldb
+      if vim.fn.executable(mason_codelldb) ~= 1 then
+        vim.notify("codelldb not installed, run :MasonInstall codelldb", vim.log.levels.WARN)
+        codelldb_cmd = "codelldb"
+      end
       dap.adapters.codelldb = {
         type = "server",
         port = "${port}",
-        executable = function()
-          local mason_path = vim.fn.stdpath("data")
-            .. "/mason/packages/codelldb/extension/adapter/codelldb"
-          if vim.fn.executable(mason_path) ~= 1 then
-            vim.notify("codelldb not installed, run :MasonInstall codelldb", vim.log.levels.ERROR)
-            return { command = "codelldb", args = { "--port", "${port}" } }
-          end
-          return { command = mason_path, args = { "--port", "${port}" } }
-        end,
+        executable = {
+          command = codelldb_cmd,
+          args = { "--port", "${port}" },
+        },
       }
 
       -- Rust debug config: recommend using <leader>dt (RustLsp debuggables) first
