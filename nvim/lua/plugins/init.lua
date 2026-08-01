@@ -596,17 +596,19 @@ return {
         },
       },
 
-      -- Keymaps: Tab navigates completion list + jumps snippets, <C-l> force-jumps snippets
+      -- Keymaps: Tab jumps snippets first, then navigates completion list
       -- Design:
-      --   Tab  = navigate list when menu visible; jump placeholder when menu hidden and in snippet
-      --         (select_next first, snippet_forward as fallback)
-      --   <C-l> = force jump snippet placeholder (used when menu still visible after snippet expand)
-      --   <CR> = confirm completion (confirm when menu visible, otherwise newline)
+      --   Tab  = jump snippet placeholder when in snippet (regardless of menu visibility);
+      --         navigate completion list when NOT in snippet;
+      --         fallback to regular Tab indent when neither applies
+      --         (snippet_forward first, select_next as fallback)
+      --   <C-l> = force jump snippet placeholder (alias, same as Tab when in snippet)
+      --   <CR> = accept completion when menu visible, otherwise newline
       keymap = {
         preset = "super-tab",
         ["<CR>"] = { "accept", "fallback" },
-        ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-        ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+        ["<Tab>"] = { "snippet_forward", "select_next", "fallback" },
+        ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
         ["<C-l>"] = { "snippet_forward", "fallback" },
         ["<C-Space>"] = { "show", "show_documentation", "hide_documentation" },
         ["<C-e>"] = { "hide", "fallback" },
