@@ -155,6 +155,7 @@
 | `<leader>dk` | Step out |
 | `<leader>de` | Terminate debug session |
 | `<leader>dr` | Run last |
+| `<leader>du` | Toggle DAP UI |
 | `<leader>dt` | List debuggables (rustaceanvim) |
 
 ---
@@ -224,7 +225,7 @@
 | `<C-w>c` | Close window |
 | `<C-w>o` | Close other windows |
 | `<Tab>` / `<S-Tab>` | Next / previous buffer |
-| `<leader>x` | Close buffer |
+| `<leader>q` | Close buffer |
 | `<leader>b` | New buffer |
 
 ---

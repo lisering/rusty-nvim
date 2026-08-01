@@ -17,6 +17,9 @@ map({ "n", "i", "v" }, "<C-s>", "<cmd> silent! write <cr>", { desc = "Silent sav
 vim.cmd("cnoreabbrev <expr> w  getcmdtype() == ':' && getcmdline() ==# 'w'  ? 'silent! w'  : 'w'")
 vim.cmd("cnoreabbrev <expr> wq getcmdtype() == ':' && getcmdline() ==# 'wq' ? 'silent! wq' : 'wq'")
 
+-- Buffer close (replaces NvChad <leader>x which conflicts with Trouble prefix)
+map("n", "<leader>q", function() require("nvchad.tabufline").close_buffer() end, { desc = "buffer close" })
+
 -- Nvim DAP
 map("n", "<Leader>dl", "<cmd>lua require'dap'.step_into()<CR>", { desc = "Debugger step into" })
 map("n", "<Leader>dj", "<cmd>lua require'dap'.step_over()<CR>", { desc = "Debugger step over" })

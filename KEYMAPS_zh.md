@@ -155,6 +155,7 @@
 | `<leader>dk` | 单步跳出 |
 | `<leader>de` | 终止调试 |
 | `<leader>dr` | 重跑上次 |
+| `<leader>du` | 切换 DAP UI |
 | `<leader>dt` | 列出可调试 testables（rustaceanvim） |
 
 ---
@@ -224,7 +225,7 @@
 | `<C-w>c` | 关闭窗口 |
 | `<C-w>o` | 关闭其他窗口 |
 | `<Tab>` / `<S-Tab>` | 下一个 / 上一个 buffer |
-| `<leader>x` | 关闭 buffer |
+| `<leader>q` | 关闭 buffer |
 | `<leader>b` | 新建 buffer |
 
 ---
