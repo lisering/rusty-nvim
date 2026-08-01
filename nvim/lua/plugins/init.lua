@@ -327,7 +327,7 @@ return {
             if test_name == "" then test_name = vim.fn.input("Test name: ") end
             return { test_name, "--nocapture" }
           end,
-          cwd = "${workspaceFolder}",
+          cwd = find_cargo_root,
           stopOnEntry = false,
         },
         {
@@ -377,7 +377,7 @@ return {
             for arg in input:gmatch("%S+") do table.insert(args, arg) end
             return args
           end,
-          cwd = "${workspaceFolder}",
+          cwd = find_cargo_root,
           stopOnEntry = false,
         },
       }
