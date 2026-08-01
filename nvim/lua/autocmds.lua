@@ -83,7 +83,7 @@ autocmd("LspAttach", {
     local client = vim.lsp.get_client_by_id(args.data.client_id)
     if client and client.name == "rust-analyzer" then
       local bufnr = args.buf
-      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+      vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
 
       -- LSP navigation keymaps (equivalent to NvChad on_attach)
       local function opts(desc)
