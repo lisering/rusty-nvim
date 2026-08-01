@@ -344,7 +344,7 @@ map("n", "<leader>rl", "<cmd>RustLsp runnables<CR>", { desc = "Rust list runnabl
 map("n", "<leader>rmu", "<cmd>RustLsp moveItem up<CR>", { desc = "Rust move item up" })
 map("n", "<leader>rmd", "<cmd>RustLsp moveItem down<CR>", { desc = "Rust move item down" })
 map("n", "<leader>ri", function()
-  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled(), { bufnr = 0 })
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
   vim.notify("Inlay hints: " .. (vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }) and "ON" or "OFF"), vim.log.levels.INFO)
 end, { desc = "Rust toggle inlay hints" })
 map("n", "<leader>rg", "<cmd>RustLsp debuggables<CR>", { desc = "Rust debuggables (DAP)" })
