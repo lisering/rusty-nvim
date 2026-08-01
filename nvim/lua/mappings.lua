@@ -30,6 +30,45 @@ map("n", "<Leader>dc", function()
     -- (prevents "No configuration available to re-run" after a failed session)
     dap.last = nil
     dap.continue()
+    -- Fallback: poll for session start and auto-open DAP UI
+    -- The program() function blocks the event loop (cargo build/test),
+    -- which can cause dap.listeners to fire unreliably in interactive mode.
+    -- This timer ensures DAP UI opens once the session is active.
+    local timer = vim.loop.new_timer()
+    timer:start(500, 500, function()
+      vim.schedule(function()
+        local session = dap.session()
+        if session and not session.closed then
+          -- Session is active — check if DAP UI is already open
+          local dapui_ok, dapui = pcall(require, "dapui")
+          if dapui_ok then
+            -- Check if any dapui window is visible
+            local ui_open = false
+            for _, win in ipairs(vim.api.nvim_list_wins()) do
+              local buf = vim.api.nvim_win_get_buf(win)
+              local ft = vim.bo[buf].filetype
+              if ft and (ft:match("^dapui_") or ft == "dap-repl") then
+                ui_open = true
+                break
+              end
+            end
+            if not ui_open then
+              dapui.open()
+              vim.notify("🐛 DAP UI auto-opened (fallback)", vim.log.levels.INFO)
+            end
+          end
+          timer:stop()
+          timer:close()
+        end
+      end)
+    end)
+    -- Safety: stop timer after 30s regardless
+    vim.defer_fn(function()
+      if timer and not timer:is_closing() then
+        timer:stop()
+        timer:close()
+      end
+    end, 30000)
   end
 end, { desc = "Debugger continue / start" })
 map("n", "<Leader>db", "<cmd>lua require'dap'.toggle_breakpoint()<CR>", { desc = "Debugger toggle breakpoint" })
@@ -41,6 +80,14 @@ map(
 )
 map("n", "<Leader>de", "<cmd>lua require'dap'.terminate()<CR>", { desc = "Debugger reset" })
 map("n", "<Leader>dr", "<cmd>lua require'dap'.run_last()<CR>", { desc = "Debugger run last" })
+map("n", "<Leader>du", function()
+  local dapui = require("dapui")
+  if require("dap").session() then
+    dapui.toggle()
+  else
+    vim.notify("No active debug session. Start one with <leader>dc first.", vim.log.levels.WARN)
+  end
+end, { desc = "Debugger toggle DAP UI" })
 
 -- rustaceanvim
 map("n", "<Leader>dt", "<cmd>lua vim.cmd('RustLsp testables')<CR>", { desc = "Debugger testables" })

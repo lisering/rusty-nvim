@@ -303,13 +303,25 @@ return {
       -- The following configs serve as fallback for manual dap.continue()
       -- Auto-find project root by searching upward for Cargo.toml,
       -- so it works even when opening files from src/ subdirectories.
+      -- IMPORTANT: verify [package] section to avoid matching workspace-only
+      -- Cargo.toml (e.g. rust stdlib's Cargo.toml uses profile-rustflags
+      -- which requires nightly, causing "failed searching for potential workspace" errors)
       local function find_cargo_root()
         local dir = vim.fn.expand("%:p:h")
         while dir ~= "/" and dir ~= "" do
-          if vim.fn.filereadable(dir .. "/Cargo.toml") == 1 then return dir end
+          local cargo_toml = dir .. "/Cargo.toml"
+          if vim.fn.filereadable(cargo_toml) == 1 then
+            -- Verify this is a [package] manifest, not a workspace-only one
+            local lines = vim.fn.readfile(cargo_toml)
+            for _, line in ipairs(lines) do
+              if line:match("%[package%]") then
+                return dir
+              end
+            end
+          end
           dir = vim.fn.fnamemodify(dir, ":h")
         end
-        return vim.fn.getcwd()
+        return nil  -- No valid package Cargo.toml found
       end
 
       dap.configurations.rust = {
@@ -319,23 +331,57 @@ return {
           request = "launch",
           program = function()
             local cwd = find_cargo_root()
+            if not cwd then
+              vim.notify("❌ No Cargo.toml with [package] found. Open a file inside a Rust project.", vim.log.levels.ERROR)
+              return nil
+            end
             local current_file = vim.fn.expand("%:t")
             vim.notify("🔧 Compiling test binary (cargo test --no-run)...", vim.log.levels.INFO)
-            local result = vim.system({ "cargo", "test", "--no-run" }, { cwd = cwd, text = true }):wait()
+            -- Use --manifest-path to prevent cargo from searching parent workspaces
+            local result = vim.system({ "cargo", "test", "--no-run", "--manifest-path", cwd .. "/Cargo.toml" }, { cwd = cwd, text = true }):wait()
+            -- NOTE: cargo test --no-run outputs to STDERR, not stdout!
+            -- Concatenate both to be safe
+            local output = (result.stdout or "") .. (result.stderr or "")
             if result and result.code == 0 then
-              for line in (result.stdout or ""):gmatch("[^\n]+") do
+              for line in output:gmatch("[^\n]+") do
+                -- Match: Executable unittests src/main.rs (target/debug/deps/foo-abc)
                 local bin_path = line:match("Executable.-%(([^)]+)%)")
                 local src_file = line:match("Executable unittests ([^ ]+)")
                 if bin_path and src_file and src_file:find(current_file, 1, true) then
-                  return cwd .. "/" .. bin_path
+                  -- bin_path may be relative (target/debug/deps/foo) or absolute
+                  -- Use vim.fn.fnamemodify to normalize: makeabsolute + simplify
+                  local full_path = vim.fn.fnamemodify(bin_path, ":p")
+                  vim.notify("✅ Test binary found: " .. full_path, vim.log.levels.INFO)
+                  return full_path
                 end
               end
             end
-            return vim.fn.input("Test binary: ", cwd .. "/target/debug/deps/")
+            -- Fallback: auto-find the most recent test binary in deps/
+            local deps_dir = cwd .. "/target/debug/deps"
+            local candidates = vim.fn.glob(deps_dir .. "/*", false, true)
+            local best = nil
+            local best_time = 0
+            for _, path in ipairs(candidates) do
+              -- Only match binaries without file extension (skip .d, .o, .rcgu.o)
+              if not path:match("%.%a+$") then
+                local mtime = vim.fn.getftime(path)
+                if mtime > best_time then best = path; best_time = mtime end
+              end
+            end
+            if best then
+              vim.notify("⚠️ Auto-detected test binary: " .. best, vim.log.levels.WARN)
+              return best
+            end
+            vim.notify("❌ No test binary found. Run cargo test first.", vim.log.levels.ERROR)
+            return nil
           end,
           args = function()
+            -- Use word under cursor as test name; no blocking input prompt
             local test_name = vim.fn.expand("<cword>")
-            if test_name == "" then test_name = vim.fn.input("Test name: ") end
+            if test_name == "" then
+              vim.notify("⚠️ No test name under cursor, running all tests", vim.log.levels.WARN)
+              return { "--nocapture" }
+            end
             return { test_name, "--nocapture" }
           end,
           cwd = find_cargo_root,
@@ -347,6 +393,10 @@ return {
           request = "launch",
           program = function()
             local cwd = find_cargo_root()
+            if not cwd then
+              vim.notify("❌ No Cargo.toml with [package] found. Open a file inside a Rust project.", vim.log.levels.ERROR)
+              return nil
+            end
             local pkg_name = nil
             local bin_name = nil
             local cargo_toml = cwd .. "/Cargo.toml"
@@ -364,30 +414,29 @@ return {
             end
             local target_name = bin_name or pkg_name
             if not target_name or target_name == "" then
-              target_name = vim.fn.input("Binary name: ")
-              if target_name == "" then return nil end
+              vim.notify("❌ Could not determine binary name from Cargo.toml", vim.log.levels.ERROR)
+              return nil
             end
             vim.notify("🔧 Compiling (cargo build)...", vim.log.levels.INFO)
-            local build_result = vim.system({ "cargo", "build" }, { cwd = cwd, text = true }):wait()
+            -- Use --manifest-path to prevent cargo from searching parent workspaces
+            local build_result = vim.system({ "cargo", "build", "--manifest-path", cwd .. "/Cargo.toml" }, { cwd = cwd, text = true }):wait()
             if build_result.code ~= 0 then
               vim.notify("❌ Compilation failed:\n" .. (build_result.stderr or ""), vim.log.levels.ERROR)
               return nil
             end
             local bin_path = cwd .. "/target/debug/" .. target_name
             if vim.fn.executable(bin_path) == 1 or vim.fn.filereadable(bin_path) == 1 then
+              vim.notify("✅ Binary ready: " .. bin_path, vim.log.levels.INFO)
               return bin_path
             end
             local found = vim.fn.glob(cwd .. "/target/debug/" .. target_name .. "*", false, true)
             if found and #found > 0 then return found[1] end
-            return vim.fn.input("Binary path: ", cwd .. "/target/debug/")
+            vim.notify("❌ Binary not found after build", vim.log.levels.ERROR)
+            return nil
           end,
-          args = function()
-            local input = vim.fn.input("Program args (optional): ")
-            if input == "" then return {} end
-            local args = {}
-            for arg in input:gmatch("%S+") do table.insert(args, arg) end
-            return args
-          end,
+          -- No blocking input prompt: use empty args by default
+          -- To pass args, use <leader>dc then select this config, then use REPL
+          args = function() return {} end,
           cwd = find_cargo_root,
           stopOnEntry = false,
         },
@@ -403,11 +452,18 @@ return {
       dapui.setup()
 
       -- Auto open/close DAP UI
+      -- Multiple listeners ensure DAP UI opens reliably regardless of adapter timing
       dap.listeners.before.attach.dapui_config = function() dapui.open() end
       dap.listeners.before.launch.dapui_config = function() dapui.open() end
       -- codelldb 的 launch 响应可能不触发 before.launch 监听器，
       -- 用 event_initialized 作为可靠的 fallback 打开 DAP UI
-      dap.listeners.after.event_initialized.dapui_config = function() dapui.open() end
+      dap.listeners.after.event_initialized.dapui_config = function()
+        dapui.open()
+        vim.notify("🐛 DAP UI opened — debug session active", vim.log.levels.INFO)
+      end
+      -- event_continued: fires when dap.continue() resumes a paused session
+      -- Acts as additional safety net to ensure DAP UI is visible
+      dap.listeners.after.event_continued.dapui_config = function() dapui.open() end
       dap.listeners.before.event_terminated.dapui_config = function() dapui.close() end
       dap.listeners.before.event_exited.dapui_config = function() dapui.close() end
     end,
