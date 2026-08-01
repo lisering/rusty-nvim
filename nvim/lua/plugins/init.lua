@@ -290,13 +290,24 @@ return {
 
       -- Rust debug config: recommend using <leader>dt (RustLsp debuggables) first
       -- The following configs serve as fallback for manual dap.continue()
+      -- Auto-find project root by searching upward for Cargo.toml,
+      -- so it works even when opening files from src/ subdirectories.
+      local function find_cargo_root()
+        local dir = vim.fn.expand("%:p:h")
+        while dir ~= "/" and dir ~= "" do
+          if vim.fn.filereadable(dir .. "/Cargo.toml") == 1 then return dir end
+          dir = vim.fn.fnamemodify(dir, ":h")
+        end
+        return vim.fn.getcwd()
+      end
+
       dap.configurations.rust = {
         {
           name = "🦀 Debug cursor test",
           type = "codelldb",
           request = "launch",
           program = function()
-            local cwd = vim.fn.getcwd()
+            local cwd = find_cargo_root()
             local current_file = vim.fn.expand("%:t")
             vim.notify("🔧 Compiling test binary (cargo test --no-run)...", vim.log.levels.INFO)
             local result = vim.system({ "cargo", "test", "--no-run" }, { cwd = cwd, text = true }):wait()
@@ -324,7 +335,7 @@ return {
           type = "codelldb",
           request = "launch",
           program = function()
-            local cwd = vim.fn.getcwd()
+            local cwd = find_cargo_root()
             local pkg_name = nil
             local bin_name = nil
             local cargo_toml = cwd .. "/Cargo.toml"
