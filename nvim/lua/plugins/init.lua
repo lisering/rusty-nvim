@@ -469,6 +469,20 @@ return {
     end,
   },
 
+  -- ============================================================
+  -- nvim-tree: override NvChad's notify threshold
+  -- Suppress info-level messages (e.g. "was properly created") to avoid
+  -- "Press ENTER or type command to continue" prompt after file operations
+  -- ============================================================
+  {
+    "nvim-tree/nvim-tree.lua",
+    opts = function()
+      local opts = require "nvchad.configs.nvimtree"
+      opts.notify = { threshold = vim.log.levels.WARN, absolute_path = false }
+      return opts
+    end,
+  },
+
   {
     'saecki/crates.nvim',
     ft = {"toml"},
@@ -543,6 +557,12 @@ return {
     "saghen/blink.cmp",
     version = "1.*",
     opts = {
+      -- Disable in DressingInput (nvim-tree file create/rename via dressing.nvim)
+      -- Prevents blink.cmp from intercepting <CR> with completion suggestions
+      enabled = function()
+        return vim.bo.filetype ~= "DressingInput"
+      end,
+
       -- Delegate LuaSnip as the sole snippet engine, eliminate duplicates
       snippets = { preset = "luasnip" },
 

@@ -44,7 +44,7 @@
 | `Tab` | Next completion item / Snippet jump |
 | `<leader>ff` | Find file by name |
 | `<leader>fw` | Global grep |
-| `<C-n>` | Toggle file tree |
+| `<leader>e` | Toggle file tree |
 | `<leader>/` | Toggle comment |
 | `<leader>fm` | Format |
 | `<leader>xx` | Diagnostics panel |
@@ -203,8 +203,7 @@
 
 | Key | Action |
 |:---:|------|
-| `<C-n>` | Toggle file tree |
-| `<leader>e` | Focus file tree |
+| `<leader>e` | Toggle file tree |
 | `<leader>ff` | Find file by name |
 | `<leader>fa` | Find all files (including hidden) |
 | `<leader>fw` | Global grep |

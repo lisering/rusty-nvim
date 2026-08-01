@@ -293,7 +293,7 @@ nvim src/main.rs
 #    <Space>ca  → Code Action 菜单
 #    <Space>ff  → 搜索文件
 #    <Space>fw  → 全局搜索内容
-#    <C-n>      → 打开文件树
+#    <Space>e   → 打开文件树
 ```
 
 ---
@@ -548,7 +548,7 @@ struct User {
 | `Tab` | 补全列表下一个 / Snippet 占位符跳转 |
 | `<leader>ff` | 搜索文件名 |
 | `<leader>fw` | 全局搜索内容 |
-| `<C-n>` | 打开文件树 |
+| `<leader>e` | 打开 / 关闭文件树 |
 | `<leader>/` | 注释切换 |
 | `<leader>fm` | 格式化 |
 | `<leader>xx` | 诊断面板 |
@@ -684,8 +684,7 @@ struct User {
 
 | 键 | 功能 |
 |:---:|------|
-| `<C-n>` | 打开 / 关闭文件树 |
-| `<leader>e` | 聚焦文件树 |
+| `<leader>e` | 打开 / 关闭文件树 |
 | `<leader>ff` | 搜索文件名 |
 | `<leader>fa` | 搜索所有文件（含隐藏） |
 | `<leader>fw` | 全局搜索内容 |

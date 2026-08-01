@@ -4,6 +4,10 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
+-- Override NvChad's <C-n> toggle and <leader>e focus:
+-- Use <leader>e to toggle tree visibility (more ergonomic than <C-n>)
+map("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle" })
+
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 

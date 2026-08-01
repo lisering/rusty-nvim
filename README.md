@@ -293,7 +293,7 @@ nvim src/main.rs
 #    <Space>ca  → code action menu
 #    <Space>ff  → find files
 #    <Space>fw  → live grep
-#    <C-n>      → toggle file tree
+#    <Space>e   → toggle file tree
 ```
 
 ---
@@ -544,7 +544,7 @@ struct User {
 | `Tab` | Next completion / Snippet placeholder forward |
 | `<leader>ff` | Find files |
 | `<leader>fw` | Live grep |
-| `<C-n>` | Toggle file tree |
+| `<leader>e` | Toggle file tree |
 | `<leader>/` | Toggle comment |
 | `<leader>fm` | Format file |
 | `<leader>xx` | Diagnostics panel |
@@ -680,8 +680,7 @@ struct User {
 
 | Key | Action |
 |:---:|--------|
-| `<C-n>` | Toggle file tree |
-| `<leader>e` | Focus file tree |
+| `<leader>e` | Toggle file tree |
 | `<leader>ff` | Find files |
 | `<leader>fa` | Find all files (incl. hidden) |
 | `<leader>fw` | Live grep |
