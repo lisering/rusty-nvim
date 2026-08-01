@@ -613,6 +613,13 @@ return {
             end,
           },
           snippets = { score_offset = 6 },
+          -- buffer: require min 2-char keyword to prevent noise from short/numeric keywords.
+          -- Fix: typing "42." triggers method completions (to_string, etc.), then typing "0"
+          -- makes keyword = "0" (length 1). Without min_keyword_length, buffer words containing
+          -- "0" (like "42.0", "0", "10") would match and keep the menu stuck open.
+          -- Per-provider min_keyword_length is always enforced (unlike global min_keyword_length
+          -- which is skipped when initial_kind == 'trigger_character').
+          buffer = { min_keyword_length = 2 },
         },
       },
 
@@ -642,13 +649,17 @@ return {
       -- Completion menu: treesitter highlighting + ghost text + auto brackets
       completion = {
         trigger = {
-          prefetch_on_insert = true,
+          -- NOTE: prefetch_on_insert defaults to false (blink.cmp marks it "buggy, not recommended")
           show_on_trigger_character = true,
           show_on_insert_on_trigger_character = true,
         },
         list = {
           max_items = 200,
-          selection = { preselect = true, auto_insert = false },
+          -- auto_insert = true (default): when an item is selected, its text is previewed inline.
+          -- This is critical for context reset after trigger characters (e.g. typing 42. then 0):
+          --   auto_insert=true  → preview_undo is set → context reset on next keyword → fresh LSP request → menu closes
+          --   auto_insert=false → preview_undo always nil → context NOT reset → stale cached items reused → menu sticks
+          selection = { preselect = true, auto_insert = true },
           cycle = { from_bottom = true, from_top = true },
         },
         accept = {
