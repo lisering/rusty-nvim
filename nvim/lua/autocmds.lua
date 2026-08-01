@@ -4,6 +4,32 @@ local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
 -- ============================================================
+-- Patch: NvChad nvdash cursor error on startup
+-- "Invalid cursor column: out of range" when dashboard opens
+-- This pcall-wraps nvim_win_set_cursor in nvdash to prevent the error
+-- ============================================================
+vim.api.nvim_create_autocmd("VimEnter", {
+  once = true,
+  callback = function()
+    local ok, nvdash = pcall(require, "nvchad.nvdash.init")
+    if ok and nvdash and nvdash.open then
+      local orig_open = nvdash.open
+      nvdash.open = function(...)
+        local args = { ... }
+        local api = vim.api
+        local orig_set_cursor = api.nvim_win_set_cursor
+        api.nvim_win_set_cursor = function(win, pos)
+          return pcall(orig_set_cursor, win, pos)
+        end
+        local result = orig_open(unpack(args))
+        api.nvim_win_set_cursor = orig_set_cursor
+        return result
+      end
+    end
+  end,
+})
+
+-- ============================================================
 -- Rust: Auto re-run cargo run in terminal on .rs file save
 -- ============================================================
 augroup("RustAutoRunOnSave", { clear = true })
