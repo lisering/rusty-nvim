@@ -28,13 +28,16 @@ M.lsp = { signature = false }
 M.nvdash = {
 	load_on_startup = true,
 	header = {
-		"                                               ",
-		"                                               ",
-		"            🦀  rusty nvim                     ",
-		"                                               ",
-		"         NvChad · rustaceanvim                  ",
-		"                                               ",
-		"                                               ",
+		"                                                  ",
+		"                                                  ",
+		"                       🦀                         ",
+		"                                                  ",
+		"                  rusty nvim v1.0                  ",
+		"           ────────────────────────────────        ",
+		"             NvChad · rustaceanvim · DAP           ",
+		"           ────────────────────────────────        ",
+		"                                                  ",
+		"                                                  ",
 	},
 	buttons = {
 		{ txt = "▸  Find File",    keys = "ff", cmd = "Telescope find_files" },
